@@ -12,7 +12,7 @@ export const create_open_conversation = async (req, res, next) => {
   try {
     const sender_id = req.user.userId;
     const { receiver_id, isGroup } = req.body;
-    if (isGroup == false) {
+    if (!isGroup) {
       //check if receiver_id is provided
       if (!receiver_id) {
         logger.error(
