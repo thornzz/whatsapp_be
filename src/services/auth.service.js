@@ -2,9 +2,14 @@ import createHttpError from "http-errors";
 import validator from "validator";
 import bcrypt from "bcrypt";
 import { UserModel } from "../models/index.js";
+import dotenv from "dotenv";
 
+//dotEnv config
+dotenv.config();
 //env variables
-const { DEFAULT_PICTURE, DEFAULT_STATUS } = process.env;
+
+const { DEFAULT_PICTURE_LINK, DEFAULT_STATUS_MESSAGE } = process.env;
+
 
 export const createUser = async (userData) => {
   const { name, email, picture, status, password } = userData;
@@ -61,13 +66,13 @@ export const createUser = async (userData) => {
   }
 
   //hash password--->to be done in the user model
-
+  
   //adding user to databse
   const user = await new UserModel({
     name,
     email,
-    picture: picture || DEFAULT_PICTURE,
-    status: status || DEFAULT_STATUS,
+    picture: picture || DEFAULT_PICTURE_LINK,
+    status: status || DEFAULT_STATUS_MESSAGE,
     password,
   }).save();
 

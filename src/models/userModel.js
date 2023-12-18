@@ -17,11 +17,11 @@ const userSchema = mongoose.Schema(
     },
     picture: {
       type: String,
-      default:process.env.DEFAULT_PICTURE
+      default:process.env.DEFAULT_PICTURE_LINK
     },
     status: {
       type: String,
-      default:process.env.DEFAULT_STATUS
+      default:process.env.DEFAULT_STATUS_MESSAGE
     },
     password: {
       type: String,

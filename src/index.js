@@ -1,8 +1,10 @@
+
 import mongoose from "mongoose";
 import { Server } from "socket.io";
 import app from "./app.js";
 import logger from "./configs/logger.config.js";
 import SocketServer from "./SocketServer.js";
+
 //env variables
 const { DATABASE_URL } = process.env;
 const PORT = process.env.PORT || 8000;
