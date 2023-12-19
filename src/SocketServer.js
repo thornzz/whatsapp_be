@@ -3,15 +3,25 @@ export default function (socket, io) {
   //user joins or opens the application
   socket.on("join", (user) => {
     socket.join(user);
-    //add joined user to online users
-    if (!onlineUsers.some((u) => u.userId === user)) {
+  
+    // Check if a user with the same socketId already exists in onlineUsers
+    const existingUserIndex = onlineUsers.findIndex((u) => u.socketId === socket.id);
+  
+    if (existingUserIndex !== -1) {
+      // If a user with the same socketId exists, update its userId
+      onlineUsers[existingUserIndex].userId = user;
+    } else {
+      // If not, add the new user to onlineUsers
       onlineUsers.push({ userId: user, socketId: socket.id });
     }
-    //send online users to frontend
+  
+    // Send online users to frontend
     io.emit("get-online-users", onlineUsers);
-    //send socket id
+  
+    // Send socket id
     io.emit("setup socket", socket.id);
   });
+  
 
   //socket disconnect
   socket.on("disconnect", () => {
