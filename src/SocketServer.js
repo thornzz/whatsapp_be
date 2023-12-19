@@ -46,9 +46,11 @@ export default function (socket, io) {
 
   //typing
   socket.on("typing", (conversation) => {
+    console.log('yazma başladı')
     socket.in(conversation).emit("typing", conversation);
   });
   socket.on("stop typing", (conversation) => {
+    console.log('yazma bitti')
     socket.in(conversation).emit("stop typing");
   });
 
