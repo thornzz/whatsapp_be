@@ -3,10 +3,12 @@ export default function (socket, io) {
   //user joins or opens the application
   socket.on("join", (user) => {
     socket.join(user);
-  
+
     // Check if a user with the same socketId already exists in onlineUsers
-    const existingUserIndex = onlineUsers.findIndex((u) => u.socketId === socket.id);
-  
+    const existingUserIndex = onlineUsers.findIndex(
+      (u) => u.socketId === socket.id
+    );
+
     if (existingUserIndex !== -1) {
       // If a user with the same socketId exists, update its userId
       onlineUsers[existingUserIndex].userId = user;
@@ -14,21 +16,23 @@ export default function (socket, io) {
       // If not, add the new user to onlineUsers
       onlineUsers.push({ userId: user, socketId: socket.id });
     }
-  
+
     // Send online users to frontend
     io.emit("get-online-users", onlineUsers);
-  
+
     // Send socket id
     io.emit("setup socket", socket.id);
   });
-  
 
   //socket disconnect
   socket.on("disconnect", () => {
     onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);
     io.emit("get-online-users", onlineUsers);
   });
-
+  //new group created
+  socket.on("new group notify", () => {
+    io.emit("group created");
+  });
   //join a conversation room
   socket.on("join conversation", (conversation) => {
     socket.join(conversation);
@@ -46,11 +50,11 @@ export default function (socket, io) {
 
   //typing
   socket.on("typing", (conversation) => {
-    console.log('yazma başladı')
+    console.log("yazma başladı");
     socket.in(conversation).emit("typing", conversation);
   });
   socket.on("stop typing", (conversation) => {
-    console.log('yazma bitti')
+    console.log("yazma bitti");
     socket.in(conversation).emit("stop typing");
   });
 
