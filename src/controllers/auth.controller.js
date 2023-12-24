@@ -12,7 +12,7 @@ export const register = async (req, res, next) => {
       email,
       picture,
       status,
-      password,
+      password
     });
     const access_token = await generateToken(
       { userId: newUser._id },
@@ -40,6 +40,7 @@ export const register = async (req, res, next) => {
         picture: newUser.picture,
         status: newUser.status,
         token: access_token,
+       
       },
     });
   } catch (error) {
@@ -76,6 +77,7 @@ export const login = async (req, res, next) => {
         picture: user.picture,
         status: user.status,
         token: access_token,
+        phonenumber:user.phonenumber
       },
     });
   } catch (error) {
@@ -114,6 +116,7 @@ export const refreshToken = async (req, res, next) => {
         picture: user.picture,
         status: user.status,
         token: access_token,
+        phonenumber:user.phonenumber
       },
     });
   } catch (error) {

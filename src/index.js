@@ -4,7 +4,7 @@ import { Server } from "socket.io";
 import app from "./app.js";
 import logger from "./configs/logger.config.js";
 import SocketServer from "./SocketServer.js";
-
+import { setGlobalSocketIO } from "./constants/index.js";
 //env variables
 const { DATABASE_URL } = process.env;
 const PORT = process.env.PORT || 8000;
@@ -44,6 +44,7 @@ const io = new Server(server, {
 });
 io.on("connection", (socket) => {
   logger.info("socket io connected successfully.");
+  setGlobalSocketIO(io,socket)
   SocketServer(socket, io);
 });
 

@@ -8,10 +8,10 @@ import {
 } from "../services/conversation.service.js";
 
 export const create_open_conversation = async (req, res, next) => {
-  console.log(req.body);
+  
   try {
     const sender_id = req.user.userId;
-    const { receiver_id, isGroup } = req.body;
+    const { receiver_id, isGroup,waba_user_id } = req.body;
     if (!isGroup) {
       //check if receiver_id is provided
       if (!receiver_id) {
@@ -51,7 +51,8 @@ export const create_open_conversation = async (req, res, next) => {
       const existed_group_conversation = await doesConversationExist(
         "",
         "",
-        isGroup
+        isGroup,
+        waba_user_id
       );
       res.status(200).json(existed_group_conversation);
     }

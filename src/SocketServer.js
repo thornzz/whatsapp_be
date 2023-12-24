@@ -3,7 +3,7 @@ export default function (socket, io) {
   //user joins or opens the application
   socket.on("join", (user) => {
     socket.join(user);
-
+    console.log(user, "user odaya katıldı");
     // Check if a user with the same socketId already exists in onlineUsers
     const existingUserIndex = onlineUsers.findIndex(
       (u) => u.socketId === socket.id
@@ -26,7 +26,9 @@ export default function (socket, io) {
 
   //socket disconnect
   socket.on("disconnect", () => {
+    console.log(socket.id, " çıkış yaptı");
     onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);
+    console.log(onlineUsers);
     io.emit("get-online-users", onlineUsers);
   });
   //new group created
@@ -35,11 +37,23 @@ export default function (socket, io) {
   });
   //join a conversation room
   socket.on("join conversation", (conversation) => {
+    console.log(conversation, "convoya yeni biri dahil oldu");
     socket.join(conversation);
+  });
+
+  socket.on("incoming-waba-message-server", ({ message, userId }) => {
+    console.log("incoming-waba-msg-server tetiklendi");
+    //  socket.in(userId).emit('receive message',message,userId);
+    io.to(userId).emit("receive message", message);
+  });
+  socket.on("incoming-waba-statues-server", ({ message, userId }) => {
+    io.to(userId).emit("update statues", message);
   });
 
   //send and receive message
   socket.on("send message", (message) => {
+    // socket.on("send message", ({message,user,socketId}) => {
+    //  console.log(JSON.stringify(message))
     let conversation = message.conversation;
     if (!conversation.users) return;
     conversation.users.forEach((user) => {

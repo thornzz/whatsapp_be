@@ -5,11 +5,20 @@ import {
   getConvoMessages,
   populateMessage,
 } from "../services/message.service.js";
+import { sendMessageToWabauser } from "../services/waba.service.js";
 
 export const sendMessage = async (req, res, next) => {
   try {
+    const { message, convo_id, files, waba_user_phonenumber } = req.body;
+
+    //send message to waba-user
+    const responseFromWABA = await sendMessageToWabauser({to:waba_user_phonenumber,message})
+   // console.log(responseFromWABA,'wabaResponse');
+    
+    // Update MongoDB messages
+   
     const user_id = req.user.userId;
-    const { message, convo_id, files } = req.body;
+    //const user_id = waba_user_id ;
     if (!convo_id || (!message && !files)) {
       logger.error("Please provider a conversation id and a message body");
       return res.sendStatus(400);
@@ -17,6 +26,7 @@ export const sendMessage = async (req, res, next) => {
     const msgData = {
       sender: user_id,
       message,
+      waba_id:responseFromWABA?.messages[0]?.id,
       conversation: convo_id,
       files: files || [],
     };

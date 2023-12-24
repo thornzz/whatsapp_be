@@ -15,13 +15,22 @@ const userSchema = mongoose.Schema(
       lowercase: true,
       validate: [validator.isEmail, "Lütfen geçerli bir email adresi giriniz"],
     },
+    phonenumber: {
+      type: String,
+      default: "",
+    },
     picture: {
       type: String,
-      default:process.env.DEFAULT_PICTURE_LINK
+      default:
+        "https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=User",
+    },
+    type: {
+      type: String,
+      default: "waba",
     },
     status: {
       type: String,
-      default:process.env.DEFAULT_STATUS_MESSAGE
+      default: process.env.DEFAULT_STATUS_MESSAGE,
     },
     password: {
       type: String,
@@ -30,10 +39,7 @@ const userSchema = mongoose.Schema(
         6,
         "Şifrenizin en az 6 karakter uzunluğunda olması gerekmektedir",
       ],
-      maxLength: [
-        128,
-        "Şifreniz en fazla 128 karakter olabilir",
-      ],
+      maxLength: [128, "Şifreniz en fazla 128 karakter olabilir"],
     },
   },
   {
@@ -53,6 +59,17 @@ userSchema.pre("save", async function (next) {
     next(error);
   }
 });
+
+userSchema.statics.checkPhoneNumberExists = async function (phoneNumber) {
+  const user = await this.findOne({ phonenumber: phoneNumber });
+  return !!user;
+};
+
+userSchema.statics.findByPhoneNumber = async function (phoneNumber) {
+  const user = await this.findOne({ phonenumber: phoneNumber });
+  return user;
+};
+
 const UserModel =
   mongoose.models.UserModel || mongoose.model("UserModel", userSchema);
 

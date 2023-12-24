@@ -6,6 +6,8 @@ export const doesConversationExist = async (
   receiver_id,
   isGroup
 ) => {
+  console.log(sender_id + " " + receiver_id + " " + isGroup);
+
   if (isGroup === false) {
     let convos = await ConversationModel.find({
       isGroup: false,
@@ -43,6 +45,28 @@ export const doesConversationExist = async (
 
     return convo;
   }
+};
+
+export const doesWabaGroupConversationExist = async (waba_user_id) => {
+  let convos = await ConversationModel.find({
+    isGroup: true,
+    $and: [
+      { users: { $elemMatch: { $eq: waba_user_id } } }
+    ],
+  })
+    .populate("users", "-password")
+    .populate("latestMessage");
+
+  if (!convos)
+    throw createHttpError.BadRequest("Oops...Something went wrong !");
+
+  //populate message model
+  convos = await UserModel.populate(convos, {
+    path: "latestMessage.sender",
+    select: "name email picture status",
+  });
+
+  return convos[0];
 };
 
 export const createConversation = async (data) => {
