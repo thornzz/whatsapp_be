@@ -28,7 +28,7 @@ export default function (socket, io) {
   socket.on("disconnect", () => {
     console.log(socket.id, " çıkış yaptı");
     onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);
-    console.log(onlineUsers);
+   
     io.emit("get-online-users", onlineUsers);
   });
   //new group created
@@ -52,6 +52,7 @@ export default function (socket, io) {
 
   //send and receive message
   socket.on("send message", (message) => {
+    console.log(message)
     // socket.on("send message", ({message,user,socketId}) => {
     //  console.log(JSON.stringify(message))
     let conversation = message.conversation;
