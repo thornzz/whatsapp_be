@@ -1,6 +1,6 @@
 import createHttpError from "http-errors";
 import logger from "../configs/logger.config.js";
-import { searchUsers as searchUsersService } from "../services/user.service.js";
+import { searchUsers as searchUsersService, getSocketStatus as getSocketStatusService } from "../services/user.service.js";
 export const searchUsers = async (req, res, next) => {
   try {
     const keyword = req.query.search;
@@ -10,6 +10,15 @@ export const searchUsers = async (req, res, next) => {
     }
     const users = await searchUsersService(keyword, req.user.userId);
     res.status(200).json(users);
+  } catch (error) {
+    next(error);
+  }
+};
+export const getSocketStatus = async (req, res, next) => {
+  try {
+  
+    const status = await getSocketStatusService();
+    res.status(200).json(status);
   } catch (error) {
     next(error);
   }

@@ -1,35 +1,26 @@
-let onlineUsers = [];
+import OnlineUsers from "./constants/onlineusers.js";
+
 export default function (socket, io) {
+
   //user joins or opens the application
   socket.on("join", (user) => {
     socket.join(user);
     console.log(user, "user odaya katıldı");
     // Check if a user with the same socketId already exists in onlineUsers
-    const existingUserIndex = onlineUsers.findIndex(
-      (u) => u.socketId === socket.id
-    );
-
-    if (existingUserIndex !== -1) {
-      // If a user with the same socketId exists, update its userId
-      onlineUsers[existingUserIndex].userId = user;
-    } else {
-      // If not, add the new user to onlineUsers
-      onlineUsers.push({ userId: user, socketId: socket.id });
-    }
-
+console.log(socket.id,'socket id');
+    OnlineUsers.addUser(user, socket);
     // Send online users to frontend
-    io.emit("get-online-users", onlineUsers);
-
+    io.emit("get-online-users", OnlineUsers.getUsers());
     // Send socket id
     io.emit("setup socket", socket.id);
   });
 
   //socket disconnect
   socket.on("disconnect", () => {
-    console.log(socket.id, " çıkış yaptı");
-    onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);
-   
-    io.emit("get-online-users", onlineUsers);
+
+    OnlineUsers.removeUser(socket.id);
+
+    io.emit("get-online-users", OnlineUsers.getUsers());
   });
   //new group created
   socket.on("new group notify", () => {
@@ -52,7 +43,7 @@ export default function (socket, io) {
 
   //send and receive message
   socket.on("send message", (message) => {
-    console.log(message)
+    console.log(message);
     // socket.on("send message", ({message,user,socketId}) => {
     //  console.log(JSON.stringify(message))
     let conversation = message.conversation;
@@ -64,14 +55,14 @@ export default function (socket, io) {
   });
 
   //typing
-  socket.on("typing", (conversation) => {
-    console.log("yazma başladı");
-    socket.in(conversation).emit("typing", conversation);
-  });
-  socket.on("stop typing", (conversation) => {
-    console.log("yazma bitti");
-    socket.in(conversation).emit("stop typing");
-  });
+  // socket.on("typing", (conversation) => {
+  //   console.log("yazma başladı");
+  //   socket.in(conversation).emit("typing", conversation);
+  // });
+  // socket.on("stop typing", (conversation) => {
+  //   console.log("yazma bitti");
+  //   socket.in(conversation).emit("stop typing");
+  // });
 
   //call
   //---call user

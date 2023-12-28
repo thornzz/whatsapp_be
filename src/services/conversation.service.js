@@ -6,11 +6,10 @@ export const doesConversationExist = async (
   receiver_id,
   isGroup
 ) => {
-  console.log(sender_id + " " + receiver_id + " " + isGroup);
-
   if (isGroup === false) {
     let convos = await ConversationModel.find({
       isGroup: false,
+      closed:false,
       $and: [
         { users: { $elemMatch: { $eq: sender_id } } },
         { users: { $elemMatch: { $eq: receiver_id } } },
@@ -47,12 +46,31 @@ export const doesConversationExist = async (
   }
 };
 
+export const doesWabaUserConversationExist = async (waba_user_id) => {
+  let convos = await ConversationModel.find({
+    isGroup: false,
+    name: waba_user_id,
+    closed:false
+  })
+    .populate("users", "-password")
+    .populate("latestMessage");
+
+  if (!convos)
+    throw createHttpError.BadRequest("Oops...Something went wrong !");
+
+  //populate message model
+  convos = await UserModel.populate(convos, {
+    path: "latestMessage.sender",
+    select: "name email picture status",
+  });
+
+  return convos[0];
+};
+
 export const doesWabaGroupConversationExist = async (waba_user_id) => {
   let convos = await ConversationModel.find({
     isGroup: true,
-    $and: [
-      { users: { $elemMatch: { $eq: waba_user_id } } }
-    ],
+    $and: [{ users: { $elemMatch: { $eq: waba_user_id } } }],
   })
     .populate("users", "-password")
     .populate("latestMessage");
@@ -93,6 +111,7 @@ export const getUserConversations = async (user_id) => {
   let conversations;
   await ConversationModel.find({
     users: { $elemMatch: { $eq: user_id } },
+    closed:false
   })
     .populate("users", "-password")
     .populate("admin", "-password")
@@ -108,6 +127,7 @@ export const getUserConversations = async (user_id) => {
     .catch((err) => {
       throw createHttpError.BadRequest("Oops...Something went wrong !");
     });
+  console.log(conversations, "convolar getuserconversations");
   return conversations;
 };
 
@@ -119,4 +139,15 @@ export const updateLatestMessage = async (convo_id, msg) => {
     throw createHttpError.BadRequest("Oops...Something went wrong !");
 
   return updatedConvo;
+};
+
+export const closeConversationById = async (convo_id) => {
+  console.log(convo_id);
+  const closedConvo = await ConversationModel.findByIdAndUpdate(convo_id, {
+    closed: true
+  },{ new: true });
+  if (!closedConvo)
+    throw createHttpError.BadRequest("Oops...Something went wrong !");
+
+  return closedConvo;
 };

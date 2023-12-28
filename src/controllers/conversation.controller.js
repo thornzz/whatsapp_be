@@ -5,13 +5,13 @@ import {
   doesConversationExist,
   getUserConversations,
   populateConversation,
+  closeConversationById,
 } from "../services/conversation.service.js";
 
 export const create_open_conversation = async (req, res, next) => {
-  
   try {
     const sender_id = req.user.userId;
-    const { receiver_id, isGroup,waba_user_id } = req.body;
+    const { receiver_id, isGroup, waba_user_id } = req.body;
     if (!isGroup) {
       //check if receiver_id is provided
       if (!receiver_id) {
@@ -64,8 +64,19 @@ export const create_open_conversation = async (req, res, next) => {
 export const getConversations = async (req, res, next) => {
   try {
     const user_id = req.user.userId;
+
     const conversations = await getUserConversations(user_id);
+
     res.status(200).json(conversations);
+  } catch (error) {
+    next(error);
+  }
+};
+export const closeConversation = async (req, res, next) => {
+  try {
+    const convo_id = req.body.convo_id;
+    const closedConvo = await closeConversationById(convo_id);
+    res.status(200).json(closedConvo);
   } catch (error) {
     next(error);
   }

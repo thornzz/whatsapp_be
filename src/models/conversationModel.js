@@ -22,6 +22,11 @@ const conversationSchema = mongoose.Schema(
         ref: "UserModel",
       },
     ],
+    closed: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
     latestMessage: {
       type: ObjectId,
       ref: "MessageModel",
