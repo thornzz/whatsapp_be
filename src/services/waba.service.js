@@ -18,7 +18,7 @@ import {
 import { MessageModel } from "../models/index.js";
 import axios from "axios";
 import logger from "../configs/logger.config.js";
-const { PRIVATE_KEY, PASSPHRASE = "" } = process.env;
+const { PRIVATE_KEY, PASSPHRASE = "", FLOW_ID } = process.env;
 import { getNextScreen } from "../utils/flow.util.js";
 import { decryptRequest, encryptResponse } from "../utils/encryption.util.js";
 
@@ -357,7 +357,7 @@ export const sendStarterFlowMessageToWabauser = async (to) => {
           parameters: {
             flow_message_version: "3",
             flow_token: "AQAAAAACS5FpgQ_cAAAAAD0QI3s.",
-            flow_id: "719936826778529",
+            flow_id: FLOW_ID,
             flow_cta: "Sohbete başla",
             flow_action: "data_exchange",
           },
