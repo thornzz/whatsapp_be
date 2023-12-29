@@ -43,11 +43,11 @@ console.log(socket.id,'socket id');
 
   //send and receive message
   socket.on("send message", (message) => {
-    console.log(message);
+    
     // socket.on("send message", ({message,user,socketId}) => {
     //  console.log(JSON.stringify(message))
     let conversation = message.conversation;
-    if (!conversation.users) return;
+    if (!conversation?.users) return;
     conversation.users.forEach((user) => {
       if (user._id === message.sender._id) return;
       socket.in(user._id).emit("receive message", message);
