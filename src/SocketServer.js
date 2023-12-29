@@ -46,7 +46,7 @@ console.log(socket.id,'socket id');
     
     // socket.on("send message", ({message,user,socketId}) => {
     //  console.log(JSON.stringify(message))
-    let conversation = message.conversation;
+    let conversation = message?.conversation;
     if (!conversation?.users) return;
     conversation.users.forEach((user) => {
       if (user._id === message.sender._id) return;
