@@ -88,17 +88,21 @@ export const handleIncomingWabaMessage = async (data) => {
       RECEIVER_ID = findReceiverUser._id.toString();
       //#endregion
 
+      logger.info(JSON.stringify(incomingWabaMessage, null, 2));
+
       const msgData = {
         sender: sender_id,
-        message: incomingWabaMessage.message,
+        message: incomingWabaMessage.files
+          ? incomingWabaMessage.files[0].file.caption || " "
+          : incomingWabaMessage.message,
         conversation: CONVO_ID,
         waba_id: incomingWabaMessage.waba_id,
-        files: [],
+        files: incomingWabaMessage.files || [],
+        type: incomingWabaMessage.files ? "waba" : "",
       };
       let newMessage = await createMessage(msgData);
       let populatedMessage = await populateMessage(newMessage._id);
       await updateLatestMessage(CONVO_ID, newMessage);
-      console.log(RECEIVER_ID);
 
       io.to(RECEIVER_ID).emit("incoming-waba-message", {
         message: populatedMessage,
@@ -219,8 +223,10 @@ export const handleIncomingWabaMessage = async (data) => {
             };
             const newConvo = await createConversation(convoData);
           }
-          sendMessageToWabauser({to:from,message:'Merhaba size nasıl yardımcı olabilirim?'});
-
+          sendMessageToWabauser({
+            to: from,
+            message: "Merhaba size nasıl yardımcı olabilirim?",
+          });
         } else return;
 
         // const msgData = {
@@ -306,18 +312,48 @@ export const parseIncomingWabaFlowMessages = async (data) => {
   // res.send(encryptResponse(screenResponse, aesKeyBuffer, initialVectorBuffer));
 };
 
-export const sendMessageToWabauser = async (parameters) => {
+export const DownloadFileFromWaba = async (mediaid) => {
   const { DIALOG360_API_KEY, DIALOG360_ENDPOINT_URL } = process.env;
 
   try {
-    const postData = {
-      recipient_type: "individual",
-      to: parameters.to,
-      type: "text",
-      text: {
-        body: parameters.message,
+    const res = await axios.get(`${DIALOG360_ENDPOINT_URL}/media/${mediaid}`, {
+      headers: {
+        "D360-API-KEY": DIALOG360_API_KEY,
       },
-    };
+      responseType: "arraybuffer",
+    });
+    return res;
+  } catch (error) {
+    console.log(error, "error at download file from waba");
+    return error;
+  }
+};
+
+export const sendMessageToWabauser = async ({ message, files, to }) => {
+  const { DIALOG360_API_KEY, DIALOG360_ENDPOINT_URL } = process.env;
+  let postData = {};
+  try {
+    if (files.length > 0) {
+      postData = {
+        recipient_type: "individual",
+        to,
+        type: "document",
+        document: {
+          caption: message || files[0].file.original_filename,
+          link: files[0].file.secure_url,
+          filename: files[0].file.original_filename,
+        },
+      };
+    } else {
+      postData = {
+        recipient_type: "individual",
+        to,
+        type: "text",
+        text: {
+          body: message,
+        },
+      };
+    }
 
     const { data } = await axios.post(
       `${DIALOG360_ENDPOINT_URL}/messages`,

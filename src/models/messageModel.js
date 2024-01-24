@@ -8,10 +8,15 @@ const messageSchema = mongoose.Schema(
       type: ObjectId,
       ref: "UserModel",
     },
-    waba_id:{
-      type:String,
-      trim:true,
-      default:''
+    waba_id: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    type: {
+      type: String,
+      trim: true,
+      default: "",
     },
     message: {
       type: String,
@@ -20,7 +25,7 @@ const messageSchema = mongoose.Schema(
     status: {
       type: String,
       trim: true,
-      default:'sent'
+      default: "sent",
     },
     conversation: {
       type: ObjectId,
