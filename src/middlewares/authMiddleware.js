@@ -17,6 +17,7 @@ export default async function authMiddleware(req, res, next) {
 
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, payload) => {
     if (err) {
+
       return next(createHttpError.Unauthorized());
     }
     req.user = payload;
