@@ -40,16 +40,18 @@ export const getConvoMessages = async (convo_id) => {
     }
     return messages;
 };
-export const getClosedConvoMessages = async (convo_name) => {
+export const getClosedConvoMessages = async (convo_name, user_id) => {
     const conversations = await ConversationModel.find({
         name: convo_name,
-        closed: true
+        closed: true,
+        users: {$elemMatch: {$eq: user_id}},
     }).lean();
 
     const conversationIds = conversations.map((conversation) => conversation._id);
 
     const messages = await MessageModel.find({
         conversation: {$in: conversationIds},
+
     })
         .populate("sender", "name picture email status")
         .populate("conversation");
