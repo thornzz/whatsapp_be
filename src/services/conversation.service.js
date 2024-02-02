@@ -98,8 +98,7 @@ export const doesConversationExist = async (
     isGroup,
     closed
 ) => {
-    let conversations = [];
-
+    let conversations;
     if (isGroup === false) {
         conversations = await ConversationModel.find({
             isGroup: false,
@@ -198,7 +197,7 @@ export const populateConversation = async (
     return populatedConvo;
 };
 
-export const getUserConversations = async (user_id, closed) => {
+export const getUserConversations = async (user_id) => {
     let conversations;
     await ConversationModel.find({
         users: {$elemMatch: {$eq: user_id}},
@@ -215,7 +214,7 @@ export const getUserConversations = async (user_id, closed) => {
             });
             conversations = results;
         })
-        .catch((err) => {
+        .catch(() => {
             throw createHttpError.BadRequest("Oops...Something went wrong !");
         });
     console.log(conversations, "convolar getuserconversations");
@@ -223,24 +222,51 @@ export const getUserConversations = async (user_id, closed) => {
 };
 
 export const getConversationsByUser = async (user_id, receiver_id) => {
-    let conversations;
-    await ConversationModel.find({
+    let conversations = [];
+
+    // Closed olan conversationları bulma
+    const closedConversations = await ConversationModel.find({
         users: {$all: [user_id, receiver_id]},
+        closed: true,
     })
         .populate("users", "-password")
         .populate("admin", "-password")
         .populate("latestMessage")
         .sort({updatedAt: -1})
-        .then(async (results) => {
-            results = await UserModel.populate(results, {
-                path: "latestMessage.sender",
+        .populate({
+            path: "latestMessage",
+            populate: {
+                path: "sender",
                 select: "name email picture status",
-            });
-            conversations = results;
+            },
         })
-        .catch((err) => {
-            throw createHttpError.BadRequest("Oops...Something went wrong !");
-        });
+        .lean();
+
+    if (closedConversations.length > 0) {
+        const latestClosedConversation = closedConversations[0];
+        conversations.push(latestClosedConversation);
+    }
+
+    // Açık olan conversationları bulma
+    const openConversations = await ConversationModel.find({
+        users: {$all: [user_id, receiver_id]},
+        closed: false,
+    })
+        .populate("users", "-password")
+        .populate("admin", "-password")
+        .populate("latestMessage")
+        .sort({updatedAt: -1})
+        .populate({
+            path: "latestMessage",
+            populate: {
+                path: "sender",
+                select: "name email picture status",
+            },
+        })
+        .lean();
+
+    conversations.push(...openConversations);
+
     console.log(conversations, "convolar getConversationsByUser");
     return conversations;
 };
@@ -270,8 +296,6 @@ export const getClosedUserConversations = async (user_id) => {
             .lean();
 
         const uniqueConversations = conversations.reduce((acc, conv) => {
-            console.log(acc, 'acc');
-            console.log(conv, 'conv');
             const existingConv = acc.find((c) => c.name === conv.name);
             if (!existingConv) {
                 acc.push(conv);
