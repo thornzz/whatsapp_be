@@ -1,17 +1,15 @@
 import createHttpError from "http-errors";
+
 import logger from "../configs/logger.config.js";
-import {
-    searchUsers as searchUsersService,
-    getSocketStatus as getSocketStatusService
-} from "../services/user.service.js";
+import { getSocketStatus as getSocketStatusService, searchUsers as searchUsersService } from "../services/user.service.js";
 
 export const searchUsers = async (req, res, next) => {
     try {
         const keyword = req.query.search;
-        if (!keyword) {
-            logger.error("Please add a search query first");
-            throw createHttpError.BadRequest("Oops...Something went wrong !");
-        }
+        // if (!keyword) {
+        //     logger.error("Please add a search query first");
+        //     throw createHttpError.BadRequest("Oops...Something went wrong !");
+        // }
         logger.info(keyword, 'keyword')
         logger.info(req.user.userId, 'userId')
 
