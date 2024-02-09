@@ -3,7 +3,7 @@ import OnlineUsers from "./constants/onlineusers.js";
 export default function (socket, io) {
   //user joins or opens the application
   socket.on("join", (user) => {
-    socket.join(user);
+    socket.join(user.userId);
     console.log(user, "user odaya katıldı");
     // Check if a user with the same socketId already exists in onlineUsers
     console.log(socket.id, "socket id");
@@ -26,7 +26,7 @@ export default function (socket, io) {
   });
   //join a conversation room
   socket.on("join conversation", (conversation) => {
-    console.log(conversation, "convoya yeni biri dahil oldu");
+    //console.log(conversation, "convoya yeni biri dahil oldu");
     socket.join(conversation);
   });
 

@@ -63,7 +63,7 @@ export const getNextScreen = async (decryptedBody) => {
 
         if (OnlineUsers.getUsers().length > 0) {
           online_agents = agent_list.filter((agent) =>
-            OnlineUsers.getUsers().some((user) => user.userId._id === agent.id)
+            OnlineUsers.getUsers().some((user) => user.userId === agent.id)
           );
           responseBody = {
             version,
