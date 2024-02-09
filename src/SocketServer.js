@@ -1,13 +1,12 @@
 import OnlineUsers from "./constants/onlineusers.js";
 
 export default function (socket, io) {
-
   //user joins or opens the application
   socket.on("join", (user) => {
     socket.join(user);
     console.log(user, "user odaya katıldı");
     // Check if a user with the same socketId already exists in onlineUsers
-console.log(socket.id,'socket id');
+    console.log(socket.id, "socket id");
     OnlineUsers.addUser(user, socket);
     // Send online users to frontend
     io.emit("get-online-users", OnlineUsers.getUsers());
@@ -17,7 +16,6 @@ console.log(socket.id,'socket id');
 
   //socket disconnect
   socket.on("disconnect", () => {
-
     OnlineUsers.removeUser(socket.id);
 
     io.emit("get-online-users", OnlineUsers.getUsers());
@@ -43,7 +41,6 @@ console.log(socket.id,'socket id');
 
   //send and receive message
   socket.on("send message", (message) => {
-    
     // socket.on("send message", ({message,user,socketId}) => {
     //  console.log(JSON.stringify(message))
     let conversation = message?.conversation;

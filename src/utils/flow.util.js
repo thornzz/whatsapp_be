@@ -1,6 +1,6 @@
-import { getAllUsers } from "../services/user.service.js";
 import { getGlobalIO } from "../constants/index.js";
 import OnlineUsers from "../constants/onlineusers.js";
+import { getAllUsers } from "../services/user.service.js";
 
 export const getNextScreen = async (decryptedBody) => {
   const { screen, data, version, action, flow_token } = decryptedBody;
@@ -63,7 +63,7 @@ export const getNextScreen = async (decryptedBody) => {
 
         if (OnlineUsers.getUsers().length > 0) {
           online_agents = agent_list.filter((agent) =>
-            OnlineUsers.getUsers().some((user) => user.userId === agent.id)
+            OnlineUsers.getUsers().some((user) => user.userId._id === agent.id)
           );
           responseBody = {
             version,
@@ -77,7 +77,7 @@ export const getNextScreen = async (decryptedBody) => {
             version,
             screen: "NO_ONLINE_AGENTS",
             data: {
-              offline_text:'Şu anda hizmet verecek temsilci bulunmamaktadır',
+              offline_text: "Şu anda hizmet verecek temsilci bulunmamaktadır",
             },
           };
         }
