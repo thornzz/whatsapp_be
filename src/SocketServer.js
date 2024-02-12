@@ -43,6 +43,14 @@ export default function (socket, io) {
     //  socket.in(userId).emit('receive message',message,userId);
     io.to(userId).emit("receive message", message);
   });
+  socket.on("message_transferred", ({ transferrer, transferredUser }) => {
+    console.log(transferrer, transferredUser);
+    //  socket.in(userId).emit('receive message',message,userId);
+    io.to(transferredUser.socketId).emit(
+      "notify_transfer_message",
+      transferrer
+    );
+  });
   socket.on("incoming-waba-statues-server", ({ message, userId }) => {
     io.to(userId).emit("update statues", message);
   });

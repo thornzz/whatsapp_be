@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+
 const { ObjectId } = mongoose.Schema.Types;
 const conversationSchema = mongoose.Schema(
   {
@@ -16,6 +17,17 @@ const conversationSchema = mongoose.Schema(
       required: true,
       default: false,
     },
+    transferred: {
+      type: Boolean,
+      default: false,
+    },
+    transfers: [
+      {
+        from: { type: ObjectId, ref: "UserModel" },
+        to: { type: ObjectId, ref: "UserModel" },
+        at: { type: Date },
+      },
+    ],
     users: [
       {
         type: ObjectId,

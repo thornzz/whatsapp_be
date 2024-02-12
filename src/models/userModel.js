@@ -1,7 +1,6 @@
+import bcrypt from "bcrypt";
 import mongoose from "mongoose";
 import validator from "validator";
-import bcrypt from "bcrypt";
-
 
 const userSchema = mongoose.Schema(
     {
@@ -26,8 +25,7 @@ const userSchema = mongoose.Schema(
                 "https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=User",
         },
         type: {
-            type: String,
-            default: "waba",
+            type: String
         },
 
         status: {
