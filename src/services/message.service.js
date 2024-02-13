@@ -52,7 +52,7 @@ export const getClosedConvoMessages = async (convo_name, user_id) => {
   const messages = await MessageModel.find({
     conversation: { $in: conversationIds },
   })
-    .populate("sender", "name picture email status")
+    .populate("sender", "name picture email status type")
     .populate("conversation");
 
   if (!messages) {

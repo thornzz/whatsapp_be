@@ -152,7 +152,7 @@ export const doesWabaUserConversationExist = async (waba_user_id) => {
   //populate message model
   convos = await UserModel.populate(convos, {
     path: "latestMessage.sender",
-    select: "name email picture status",
+    select: "name email picture status type",
   });
 
   return convos[0];
@@ -172,7 +172,7 @@ export const doesWabaGroupConversationExist = async (waba_user_id) => {
   //populate message model
   convos = await UserModel.populate(convos, {
     path: "latestMessage.sender",
-    select: "name email picture status",
+    select: "name email picture status type",
   });
 
   return convos[0];
@@ -236,11 +236,22 @@ export const transferConversation = async (
     conversation.users[oldUserIndex] = newUserId;
     conversation.transferred = true;
     const transferredAt = new Date();
-    conversation.transfers.push({
-      from: oldUserId,
-      to: newUserId,
-      at: transferredAt,
-    });
+
+    // Son mesajı bul ve latestBeforeTransfer özelliğine ata
+    const latestMessage = await MessageModel.findOne({
+      conversation: conversationId,
+    })
+      .sort({ createdAt: -1 })
+      .exec();
+    if (latestMessage) {
+      conversation.transfers.push({
+        from: oldUserId,
+        to: newUserId,
+        at: transferredAt,
+        latestMessageBeforeTransfer: latestMessage._id,
+      });
+    }
+
     await conversation.save();
 
     return "Konuşma başarıyla transfer edildi";

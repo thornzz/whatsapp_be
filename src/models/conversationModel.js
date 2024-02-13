@@ -26,6 +26,7 @@ const conversationSchema = mongoose.Schema(
         from: { type: ObjectId, ref: "UserModel" },
         to: { type: ObjectId, ref: "UserModel" },
         at: { type: Date },
+        latestMessageBeforeTransfer: { type: ObjectId, ref: "MessageModel" },
       },
     ],
     users: [
