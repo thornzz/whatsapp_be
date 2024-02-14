@@ -237,18 +237,25 @@ export const transferConversation = async (
     conversation.transferred = true;
     const transferredAt = new Date();
 
+    // ilk mesajı bul ve firstBeforeTransfer özelliğine ata
+    const firstMessage = await MessageModel.findOne({
+      conversation: conversationId,
+    })
+      .sort({ createdAt: 1 })
+      .exec();
     // Son mesajı bul ve latestBeforeTransfer özelliğine ata
     const latestMessage = await MessageModel.findOne({
       conversation: conversationId,
     })
       .sort({ createdAt: -1 })
       .exec();
-    if (latestMessage) {
+    if (latestMessage && firstMessage) {
       conversation.transfers.push({
         from: oldUserId,
         to: newUserId,
         at: transferredAt,
         latestMessageBeforeTransfer: latestMessage._id,
+        firstMessageBeforeTransfer: firstMessage._id,
       });
     }
 
