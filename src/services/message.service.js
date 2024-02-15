@@ -33,13 +33,21 @@ export const populateMessage = async (id) => {
 export const getConvoMessages = async (convo_id) => {
   const messages = await MessageModel.find({ conversation: convo_id })
     .populate("sender", "name picture email status type")
-    .populate("conversation");
+    .populate({
+      path: "conversation",
+      populate: {
+        path: "transfers.from transfers.to",
+        model: "UserModel",
+        select: "name",
+      },
+    });
   if (!messages) {
     throw createHttpError.BadRequest("Oops...Something went wrong !");
   }
   console.log(messages, "messagesssssss");
   return messages;
 };
+
 export const getClosedConvoMessages = async (convo_name, user_id) => {
   const conversations = await ConversationModel.find({
     name: convo_name,
@@ -53,7 +61,14 @@ export const getClosedConvoMessages = async (convo_name, user_id) => {
     conversation: { $in: conversationIds },
   })
     .populate("sender", "name picture email status type")
-    .populate("conversation");
+    .populate({
+      path: "conversation",
+      populate: {
+        path: "transfers.from transfers.to",
+        model: "UserModel",
+        select: "name",
+      },
+    });
 
   if (!messages) {
     throw createHttpError.BadRequest("Oops...Something went wrong !");

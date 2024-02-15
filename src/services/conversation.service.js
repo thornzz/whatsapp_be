@@ -237,12 +237,29 @@ export const transferConversation = async (
     conversation.transferred = true;
     const transferredAt = new Date();
 
+    let firstMessage;
     // ilk mesajı bul ve firstBeforeTransfer özelliğine ata
-    const firstMessage = await MessageModel.findOne({
-      conversation: conversationId,
-    })
-      .sort({ createdAt: 1 })
-      .exec();
+    if (conversation.transfers.length === 0) {
+      firstMessage = await MessageModel.findOne({
+        conversation: conversationId,
+      })
+        .sort({ createdAt: 1 })
+        .exec();
+    } else {
+      // Find the latest transfer with oldUserId as the sender
+      const latestTransfer =
+        conversation.transfers[conversation.transfers.length - 1];
+
+      // Find the message after the latest transfer
+      const messageAfterTransfer = await MessageModel.findOne({
+        _id: { $gt: latestTransfer.latestMessageBeforeTransfer },
+        conversation: conversationId,
+      }).sort({ createdAt: 1 });
+
+      // Update the firstMessageBeforeTransfer with the new message id
+      firstMessage = messageAfterTransfer;
+    }
+
     // Son mesajı bul ve latestBeforeTransfer özelliğine ata
     const latestMessage = await MessageModel.findOne({
       conversation: conversationId,
