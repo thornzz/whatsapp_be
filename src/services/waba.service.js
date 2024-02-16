@@ -1,12 +1,15 @@
-import { parseIncomingWabaMessage } from "../utils/waba.util.js";
-import { getGlobalSocket, getGlobalIO } from "../constants/index.js";
+import axios from "axios";
+
+import logger from "../configs/logger.config.js";
+import { getGlobalIO, getGlobalSocket } from "../constants/index.js";
 import { ConversationModel, UserModel } from "../models/index.js";
+import { MessageModel } from "../models/index.js";
 import {
   createConversation,
   doesConversationExist,
+  doesWabaGroupConversationExist,
   doesWabaUserConversationExist,
   getUserConversations,
-  doesWabaGroupConversationExist,
   populateConversation,
   updateLatestMessage,
 } from "../services/conversation.service.js";
@@ -15,9 +18,7 @@ import {
   getConvoMessages,
   populateMessage,
 } from "../services/message.service.js";
-import { MessageModel } from "../models/index.js";
-import axios from "axios";
-import logger from "../configs/logger.config.js";
+import { parseIncomingWabaMessage } from "../utils/waba.util.js";
 
 const { PRIVATE_KEY, PASSPHRASE = "", FLOW_ID } = process.env;
 import { getNextScreen } from "../utils/flow.util.js";
@@ -334,7 +335,7 @@ export const sendMessageToWabauser = async ({ message, files, to }) => {
   const { DIALOG360_API_KEY, DIALOG360_ENDPOINT_URL } = process.env;
   let postData = {};
   try {
-    if (files.length > 0) {
+    if (files && files.length > 0) {
       postData = {
         recipient_type: "individual",
         to,
@@ -365,9 +366,9 @@ export const sendMessageToWabauser = async ({ message, files, to }) => {
         },
       }
     );
-
     return data;
   } catch (error) {
+    console.log(error, "error at send message to wabauser");
     return error;
   }
 };
