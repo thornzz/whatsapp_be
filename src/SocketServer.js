@@ -3,15 +3,17 @@ import OnlineUsers from "./constants/onlineusers.js";
 export default function (socket, io) {
   //user joins or opens the application
   socket.on("join", (user) => {
-    OnlineUsers.addUser(user, socket, io);
-    socket.join(user.userId);
-    const onlineUsers = OnlineUsers.getUsers();
-    // Send online users to frontend
-    console.log("sending online users on join");
-    io.emit("get-online-users", onlineUsers);
+    if (user) {
+      OnlineUsers.addUser(user, socket, io);
+      socket.join(user.userId);
+      const onlineUsers = OnlineUsers.getUsers();
+      // Send online users to frontend
+      console.log("sending online users on join");
+      io.emit("get-online-users", onlineUsers);
 
-    // // Send socket id
-    // io.emit("setup socket", socket.id);
+      // // Send socket id
+      // io.emit("setup socket", socket.id);
+    }
   });
 
   //socket disconnect

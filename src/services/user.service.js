@@ -32,6 +32,7 @@ export const searchUsers = async (keyword, userId) => {
       _id: { $ne: userId },
     });
   }
+
   const userIds = users.map((user) => user._id);
 
   let conversations = [];
@@ -39,7 +40,7 @@ export const searchUsers = async (keyword, userId) => {
     conversations = await ConversationModel.find({ users: { $in: userIds } });
   }
   const filteredConversations = conversations.filter((conversation) =>
-    conversation.users.some((user) => user._id.toString() === userId)
+    conversation.users.some((user) => user._id.toString() === userId.toString())
   );
 
   const filteredUsers = users.filter((user) =>

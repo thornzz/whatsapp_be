@@ -353,7 +353,6 @@ export const getConversationsByUser = async (user_id, receiver_id) => {
 
   conversations.push(...openConversations);
 
-  console.log(conversations, "convolar getConversationsByUser");
   return conversations;
 };
 export const getClosedUserConversations = async (user_id) => {

@@ -1,19 +1,20 @@
 import createHttpError from "http-errors";
+
 import logger from "../configs/logger.config.js";
 import {
+  closeConversationById,
   createConversation,
   doesConversationExist,
-  getUserConversations,
-  populateConversation,
-  closeConversationById,
   getClosedUserConversations,
   getConversationsByUser,
+  getUserConversations,
+  populateConversation,
   transferConversation as transferConvo,
 } from "../services/conversation.service.js";
 
 export const create_open_conversation = async (req, res, next) => {
   try {
-    const sender_id = req.user.userId;
+    const sender_id = req.user._id;
     const { receiver_id, isGroup, waba_user_id, closed } = req.body;
     if (!isGroup) {
       //check if receiver_id is provided
@@ -67,7 +68,8 @@ export const create_open_conversation = async (req, res, next) => {
 
 export const getConversations = async (req, res, next) => {
   try {
-    const user_id = req.user.userId;
+    console.log(req.user, "get conversation");
+    const user_id = req.user._id;
     const closed = req.query.closed;
     let conversations;
     if (closed) {
@@ -85,7 +87,7 @@ export const getConversations = async (req, res, next) => {
 
 export const getUserReceiverConversations = async (req, res, next) => {
   try {
-    const user_id = req.user.userId;
+    const user_id = req.user._id;
     const receiver_id = req.query.receiver;
 
     const conversations = await getConversationsByUser(user_id, receiver_id);
@@ -127,7 +129,7 @@ export const createGroup = async (req, res, next) => {
   }
   if (users.length < 2) {
     throw createHttpError.BadRequest(
-      "Atleast 2 users are required to start a group chat."
+      "At least 2 users are required to start a group chat."
     );
   }
   let convoData = {
