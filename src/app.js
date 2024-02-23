@@ -1,3 +1,4 @@
+import "express-async-errors";
 import compression from "compression";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -8,7 +9,6 @@ import mongoSanitize from "express-mongo-sanitize";
 import helmet from "helmet";
 import createHttpError from "http-errors";
 import morgan from "morgan";
-
 import routes from "./routes/index.js";
 
 //dotEnv config
