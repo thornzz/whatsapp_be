@@ -11,6 +11,7 @@ import {
   populateConversation,
   transferConversation as transferConvo,
 } from "../services/conversation.service.js";
+import { sendMessageToWabauser } from "../services/waba.service.js";
 
 export const create_open_conversation = async (req, res, next) => {
   try {
@@ -113,8 +114,16 @@ export const transferConversation = async (req, res, next) => {
 };
 export const closeConversation = async (req, res, next) => {
   try {
-    const convo_id = req.body.convo_id;
+    const { convo_id, to } = req.body;
     const closedConvo = await closeConversationById(convo_id);
+
+    await sendMessageToWabauser({
+      to,
+      message:
+        "Görüşmeniz sonlandırıldı. Bizimle iletişime geçtiğiniz için teşekkür ederiz.",
+      files: [],
+    });
+
     res.status(200).json(closedConvo);
   } catch (error) {
     next(error);
