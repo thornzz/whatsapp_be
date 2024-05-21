@@ -40,7 +40,7 @@ server = app.listen(PORT, () => {
 const io = new Server(server, {
   pingTimeout: 60000,
   cors: {
-    origin: "https://wabusiness.k2msoftware.com",
+    origin: process.env.CLIENT_ENDPOINT,
     credentials: true,
   },
 });
