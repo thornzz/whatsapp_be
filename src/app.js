@@ -21,7 +21,7 @@ const app = express();
 
 //use cors
 const corsOptions = {
-  origin: process.env.CLIENT_ENDPOINT,
+  origin: "https://wabusiness.k2msoftware.com",
   credentials: true,
 };
 app.use(cors(corsOptions));
