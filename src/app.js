@@ -1,4 +1,3 @@
-import "express-async-errors";
 import compression from "compression";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -9,7 +8,10 @@ import mongoSanitize from "express-mongo-sanitize";
 import helmet from "helmet";
 import createHttpError from "http-errors";
 import morgan from "morgan";
+
 import routes from "./routes/index.js";
+
+import "express-async-errors";
 
 //dotEnv config
 dotenv.config();
@@ -23,7 +25,7 @@ const corsOptions = {
   credentials: true,
 };
 app.use(cors(corsOptions));
-app.options("*", cors());
+app.options("*", cors(corsOptions));
 
 //morgan
 if (process.env.NODE_ENV !== "production") {
